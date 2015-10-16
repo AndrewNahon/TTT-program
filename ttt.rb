@@ -13,6 +13,7 @@ def create_board
 end 
 
 def draw_board(board)
+  system 'clear'
   puts "  #{board[1]}  |  #{board[2]}  |  #{board[3]}  "
   puts "------------------"
   puts "  #{board[4]}  |  #{board[5]}  |  #{board[6]}  "  
@@ -30,19 +31,44 @@ def player_turn(board)
   board[choice] = 'x'
 end
 
-def comp_turn(board)
+def comp_turn(board, winning_positions)
+  move1 = two_in_a_row_o(board, winning_positions) 
+  move2 = two_in_a_row_x(board, winning_positions) 
   choice = board.select {|k,v| v == ' '}.keys.sample
-  board[choice] = 'o'
+  move1 ? board[move1] = 'o' : (move2 ? board[move2] = 'o' : board[choice] = 'o')
 end
+
+
+def two_in_a_row_x(board, winning_positions)    
+  winning_positions.each do |position|
+  array = []
+  array = array + [board[position[0]], board[position[1]], board[position[2]]]
+    if array.count('x') == 2 and array.count(' ') == 1
+      move = position[array.index(' ')]
+      return move
+    end
+  end
+  nil
+end
+
+def two_in_a_row_o(board, winning_positions)    
+  winning_positions.each do |position|
+  array = []
+  array = array + [board[position[0]], board[position[1]], board[position[2]]]
+    if array.count('o') == 2 and array.count(' ') == 1
+      move = position[array.index(' ')]
+      return move
+    end
+  end
+  nil
+end
+
 
 def tie?(board)
   board.select {|k,v| v == ' '}.keys.empty?
 end
 
-def is_there_a_winner(board)
-  winning_positions = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9],
-                      [3, 5, 7], [3, 5, 7]]
-                      
+def is_there_a_winner(board, winning_positions)
   winning_positions.each do |position|
     if board[position[0]] == 'x' and  board[position[1]] == 'x' and board[position[2]] == 'x'
       return 'Player'
@@ -54,25 +80,21 @@ def is_there_a_winner(board)
   end
 end
 
+winning_positions = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9],
+                      [3, 5, 7], [3, 5, 7]] 
 
 board = create_board
 draw_board(board)
-#board = { 1 => 'o', 2 => 'o', 3 => 'o'}
 
 begin
   player_turn(board)
-  comp_turn(board)
+  comp_turn(board, winning_positions)
   draw_board(board)
-  winner = is_there_a_winner(board)
-  puts board
-end until winner
+  winner = is_there_a_winner(board, winning_positions)
+ end until winner || tie?(board)
 
 if winner
   puts "#{winner} won!"
 else
  puts "It's a tie."
 end
-
-
-
-
