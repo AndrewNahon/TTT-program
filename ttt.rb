@@ -33,16 +33,15 @@ def display_board(board)
 end
 
 def player_move(board)
+  
   puts "Make your move. Choose an available square (1--9)"
   move = gets.chomp.to_i
-  until (1..9).member?(move)
-    puts "You must select an empty number between 1 and 9"
-    move = gets.chomp.to_i
-  end
+  
   until board[move] == ' '
-    puts "You must select an empty square"
+    puts "You must select an empty square between 1--9"
     move = gets.chomp.to_i
   end
+  
   board[move] = 'x'
   display_board(board)
 end
@@ -54,21 +53,21 @@ def computer_move(board)
     board[move] = 'o'
   else
   #pick a random available square
-  move = (board.select {|k, v| v == ' '}.keys.sample)
+  move = (board.select {|_, v| v == ' '}.keys.sample)
   board[move] = 'o'
   end
+  
   display_board(board)
 end
 
 def check_for_two(board)
   WINNING_LINES.each do |line|
-    array = []
-    array += [board[line[0]], board[line[1]], board[line[2]]]
-      if array.count('o') == 2 && array.count(' ') == 1 
-        return line[array.index(' ')]
-      elsif array.count('x') == 2 && array.count(' ') == 1 
-        return line[array.index(' ')]
-      end  
+    array = [board[line[0]], board[line[1]], board[line[2]]]
+    if array.count('o') == 2 && array.count(' ') == 1 
+      return line[array.index(' ')]
+    elsif array.count('x') == 2 && array.count(' ') == 1 
+      return line[array.index(' ')]
+    end  
   end
   nil
 end
@@ -84,27 +83,29 @@ def check_for_winner(board)
   nil
 end
 
+def game_over?(board, winner)
+  board.values.include?(' ') == false || winner
+end
 
 begin 
 
   board = create_board
   display_board(board)
-  winner = nil
 
   begin
       player_move(board)
       winner = check_for_winner(board)
      
-      if board.values.include?(' ') == false || winner 
+      if game_over?(board, winner)
         break
       end
       computer_move(board)
       winner = check_for_winner(board)
       
-      if board.values.include?(' ') == false || winner 
+      if game_over?(board, winner)
         break
       end
-  end until board.values.include?(' ') == false || winner 
+  end until game_over?(board, winner)
   
   if winner
     puts "#{winner} won!"
