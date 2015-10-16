@@ -23,7 +23,7 @@ end
 def player_turn(board)
   puts "Choose square (1--9)"
   choice = gets.chomp.to_i
-  unless board.select {|k, v| v == ' '}.keys.include?(choice)
+  until board.select {|k, v| v == ' '}.keys.include?(choice)
     puts "You must pick an empty square."
     choice = gets.chomp.to_i
   end
@@ -41,8 +41,8 @@ end
 
 def is_there_a_winner(board)
   winning_positions = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9],
-                      [3, 5, 7], [3, 5, 7]
-                      ]
+                      [3, 5, 7], [3, 5, 7]]
+                      
   winning_positions.each do |position|
     if board[position[0]] == 'x' and  board[position[1]] == 'x' and board[position[2]] == 'x'
       return 'Player'
@@ -57,15 +57,15 @@ end
 
 board = create_board
 draw_board(board)
-
+#board = { 1 => 'o', 2 => 'o', 3 => 'o'}
 
 begin
-player_turn(board)
-comp_turn(board)
-draw_board(board)
-winner = is_there_a_winner(board)
-
-end until tie?(board) || winner
+  player_turn(board)
+  comp_turn(board)
+  draw_board(board)
+  winner = is_there_a_winner(board)
+  puts board
+end until winner
 
 if winner
   puts "#{winner} won!"
